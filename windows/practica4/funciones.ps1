@@ -71,7 +71,7 @@ function Solicitar-EnteroPositivo {
 }
 
 function Verificar-Instalaciones {
-    Write-Host "--- ESTADO DE SERVICIOS ---"
+    Write-Host "ESTADO DE SERVICIOS"
     $dhcp = Get-WindowsFeature DHCP
     $dns = Get-WindowsFeature DNS
     if ($dhcp.Installed) { Write-Host "[DHCP] INSTALADO" } else { Write-Host "[DHCP] NO INSTALADO" }
