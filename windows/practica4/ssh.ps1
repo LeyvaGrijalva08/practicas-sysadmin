@@ -1,5 +1,5 @@
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Warning "ejecuta este script como Administrador."
+    Write-Warning "Ejecuta este script como Administrador."
     exit
 }
 
@@ -33,10 +33,16 @@ function Configurar-AccesoSSH {
         Write-Host "La regla de Firewall para SSH ya existe y esta activa."
     }
 
-    # Obtener IP principal de la maquina
-    $ip = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.InterfaceAlias -notlike "*Loopback*" -and $_.InterfaceAlias -notmatch "vEthernet"}).IPAddress | Select-Object -First 1
-    $usuario = $env:USERNAME
-    Write-Host "ssh $usuario@$ip"
+    $ipInfo = Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "Ethernet" -ErrorAction SilentlyContinue
+    
+    if ($ipInfo) {
+        $ip = $ipInfo.IPAddress
+        $usuario = $env:USERNAME
+        Write-Host ""
+        Write-Host "ssh $usuario@$ip"
+    } else {
+        Write-Host "No se encontro una IP en el adaptador 'Ethernet'. Revisa la conexion."
+    }
 }
 
 Configurar-AccesoSSH
