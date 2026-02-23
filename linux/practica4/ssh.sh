@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$EUID" -ne 0 ]; then
-    echo "ejecuta el script como root" >&2
+    echo "Advertencia: ejecuta este script como root (o usa sudo)." >&2
     exit 1
 fi
 
@@ -32,7 +32,7 @@ function configurar_acceso_ssh() {
         echo "Firewall UFW no detectado. El puerto 22 esta abierto por defecto en Debian."
     fi
 
-    IP=$(ip -o -4 addr list | awk '{print $4}' | cut -d/ -f1 | grep -v '127.0.0.1' | head -n 1)
+    IP=$(ip -o -4 addr list enp0s3 | awk '{print $4}' | cut -d/ -f1)
     
     if [ -n "$SUDO_USER" ]; then
         USUARIO="$SUDO_USER"
@@ -41,7 +41,11 @@ function configurar_acceso_ssh() {
     fi
 
     echo ""
-    echo "ssh $USUARIO@$IP"
+    if [ -n "$IP" ]; then
+        echo -e "\e[33mssh $USUARIO@$IP\e[0m"
+    else
+        echo -e "\e[31mNo se encontro una IP en el adaptador 'enp0s3'. Revisa la conexion.\e[0m"
+    fi
     echo ""
 }
 
